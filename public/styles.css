@@ -1,0 +1,13 @@
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+video, canvas {
+  width: 450px;
+  height: 450px;
+  border-radius: 100%;
+  color: hsl(0, 100%, 50%);
+}
+
+

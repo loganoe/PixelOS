@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Viewer</title>
+    <meta charset="UTF-8" />
+    <link href="/styles.css" rel="stylesheet" />
+
+  </head>
+  <body>
+
+     <div id="haha" width = "2000px" height = "1000px"></div>
+      <canvas id="bigVideo"></canvas>
+      <canvas id="bigVideo2"></canvas>
+
+ 
+    <video playsinline autoplay muted id="hehe"></video>
+    <button id="enable-audio">Enable audio</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/watch.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+  var v = document.getElementById('hehe');
+  var canvas = document.getElementById('bigVideo');
+  var context = canvas.getContext('2d');
+  var cw = Math.floor(canvas.clientWidth);
+  var ch = Math.floor(canvas.clientHeight);
+  canvas.width = cw;
+  canvas.height = ch;
+  v.addEventListener('play', function() {
+    updateBigVideo(this, context, cw, ch);
+  }, false);
+}, false);
+
+
+
+function updateBigVideo(v, c, w, h) {
+  if (v.paused || v.ended) return false;
+  c.filter = 'contrast(10)';
+  destinationCtx.filter = 'contrast(10)';
+  c.drawImage(v, 0, 0, w, h);
+  destinationCtx.drawImage(v, 0, 0, (w/1.7), (h/3));
+  setTimeout(updateBigVideo, 20, v, c, w, h);
+}
+var sourceCanvas = document.getElementById('bigVideo');
+var destinationCanvas = document.getElementById("bigVideo2");
+
+var destinationCtx;
+
+//get the destination context
+destinationCtx = destinationCanvas.getContext('2d');
+
+
+//copy the data
+destinationCtx.drawImage(sourceCanvas, 0, 0);
+    </script>
+  </body>
+</html>
