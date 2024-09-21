@@ -8,16 +8,20 @@
   </head>
   <body>
 
-     <div id="haha" width = "2000px" height = "1000px"></div>
+
+     <Br>
       <canvas id="bigVideo"></canvas>
       <canvas id="bigVideo2"></canvas>
 
- 
+      
     <video playsinline autoplay muted id="hehe"></video>
+    <button onclick="download()">Donwload picture</button>
     <button id="enable-audio">Enable audio</button>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/watch.js"></script>
-    <script>
+    <script src="/watch.js" ></script>
+    <script defer>
+      var sourceCanvas = document.getElementById('bigVideo');
+      var destinationCanvas = document.getElementById("bigVideo2");
       document.addEventListener('DOMContentLoaded', function() {
   var v = document.getElementById('hehe');
   var canvas = document.getElementById('bigVideo');
@@ -26,24 +30,99 @@
   var ch = Math.floor(canvas.clientHeight);
   canvas.width = cw;
   canvas.height = ch;
+  var che = Math.floor(destinationCanvas.clientWidth);
+  var cwe = Math.floor(destinationCanvas.clientHeight);
+  canvas.width = che;
+  canvas.height = cwe; 
   v.addEventListener('play', function() {
     updateBigVideo(this, context, cw, ch);
+
   }, false);
 }, false);
 
+document.addEventListener('DOMContentLoaded', function() {
+  var v = document.getElementById('hehe');
+  var canvas = document.getElementById('bigVideo2');
+  var context = canvas.getContext('2d');
+  var cw = Math.floor(canvas.clientWidth);
+  var ch = Math.floor(canvas.clientHeight);
+  canvas.width = cw;
+  canvas.height = ch;
+  var che = Math.floor(destinationCanvas.clientWidth);
+  var cwe = Math.floor(destinationCanvas.clientHeight);
+  canvas.width = che;
+  canvas.height = cwe; 
+  v.addEventListener('play', function() {
+    updateBiVideo(this, context, cw, ch);
+
+  }, false);
+}, false);
+
+var destinationCtx = destinationCanvas.getContext('2d');
+//get the destination context
+destinationCtx.scale(0.65, 0.4);
+
+     // Check if the Web Speech API is supported
+     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US'; // Set the language
+      recognition.continuous = true; // Keep listening after recognizing
+
+      // Start recognition
+      recognition.start();
+
+      // On result (when something is recognized)
+      recognition.onresult = function(event) {
+        const transcript = event.results[event.resultIndex][0].transcript.trim();
+        console.log('Recognized:', transcript);
+
+        // Check for the keyword
+        const keyword = 'headset take a picture'; // Replace with your keyword
+        if (transcript.toLowerCase().includes(keyword) || transcript.toLowerCase().includes('headset, take a picture') || transcript.tolowerCase().includes('headset. take a picture')) {
+          console.log('Keyword detected!');
+          download();
+        }
+      };
+
+      // Handle recognition errors
+      recognition.onerror = function(event) {
+        console.error('Speech recognition error', event.error);
+      };
+
+      // Restart recognition if it stops
+      recognition.onend = function() {
+        console.log('Speech recognition ended. Restarting...');
+        recognition.start(); // Automatically restart the recognition
+      };
+
+    } else {
+      console.log('Web Speech API is not supported in this browser.');
+    }
+function download() {
 
 
+    console.log("donwload started")
+  var link = document.createElement('a');
+  link.download = 'filename.png';
+  link.href = document.getElementById('bigVideo').toDataURL()
+  link.click();
+
+}
 function updateBigVideo(v, c, w, h) {
   if (v.paused || v.ended) return false;
-  c.filter = 'contrast(10)';
-  destinationCtx.filter = 'contrast(10)';
+
   c.drawImage(v, 0, 0, w, h);
-  destinationCtx.drawImage(v, 0, 0, (w/1.7), (h/3));
+
   setTimeout(updateBigVideo, 20, v, c, w, h);
 }
-var sourceCanvas = document.getElementById('bigVideo');
-var destinationCanvas = document.getElementById("bigVideo2");
+function updateBiVideo(v, c, w, h) {
+  if (v.paused || v.ended) return false;
 
+  c.drawImage(v, 0, 0, w, h);
+
+  setTimeout(updateBigVideo, 20, v, c, w, h);
+}
 var destinationCtx;
 
 //get the destination context
